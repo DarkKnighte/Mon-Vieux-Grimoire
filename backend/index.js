@@ -25,8 +25,6 @@ app.listen(4000, () => {
     console.log("Server running on http://localhost:4000");
 });
 
-mongoose.connect('mongodb+srv://gabrielgambotti_db_user:<Gabrielito11.>@darkknight.rm2llp8.mongodb.net/?retryWrites=true&w=majority&appName=DarkKnight',
-  { useNewUrlParser: true,
-    useUnifiedTopology: true })
+mongoose.connect('mongodb+srv://gabrielgambotti_db_user:Gabrielito11.@darkknight.rm2llp8.mongodb.net/?retryWrites=true&w=majority&appName=DarkKnight',)
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));

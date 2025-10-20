@@ -1,24 +1,32 @@
 const express = require("express");
 const mongoose = require("mongoose");
 
+const Book = require("./models/books");
+
 const app = express();
 
 app.use(express.json());
 
 app.post("/api/books", (request, response, next) => {
-  console.log(request.body);
-  response.status(201).json({ message: "Book created" });
-  next();
-})
+    delete request.body._id;
+    const book = new Book({
+        ...request.body
+    });
+    book.save()
+    .then(() => response.status(201).json({ message: 'Livre enregistré !' }))
+    .catch(error => response.status(400).json({ error }));
+});
 
-app.get("/api/books", (request, response, next) => {
-  console.log(request.body);
-  response.status(200).json({ message: "Books retrieved" });
-  next();
+app.get("/api/books/:id", (request, response, next) => {
+    Book.findOne({ _id: request.params.id })
+    .then(book => response.status(200).json(book))
+    .catch(error => response.status(404).json({ error }));
 });
 
 app.get("/api/books", (request, response, next) => {
-    response.json({ message: "Hello World" });
+    Book.find()
+    .then(books => response.status(200).json(books))
+    .catch(error => response.status(400).json({ error }));
 });
 
 app.listen(4000, () => {

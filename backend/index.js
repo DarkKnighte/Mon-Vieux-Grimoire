@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 
 const bookRoutes = require("./routes/book");
+const userRoutes = require("./routes/user");
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use((request, response, next) => {
 app.use(express.json());
 
 app.use("/api/books", bookRoutes);
+app.use("/api/auth", userRoutes);
 
 app.use((error, request, response, next) => {
   console.error("Une erreur est survenue.", error);

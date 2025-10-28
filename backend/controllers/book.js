@@ -1,4 +1,4 @@
-const Book = require("../models/books");
+const Book = require("../models/book");
 
 exports.createBook = (request, response, next) => {
   delete request.body._id;

@@ -1,20 +1,30 @@
 {
-  "name": "backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start": "node --watch index.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "dependencies": {
-    "dotenv": "^17.2.3",
-    "express": "^5.1.0",
-    "mongodb": "^6.20.0",
-    "mongoose": "^8.19.1",
-    "multer": "^2.0.2"
-  }
+	"author": "",
+	"dependencies": {
+		"bcrypt": "^6.0.0",
+		"dotenv": "^17.2.3",
+		"express": "^5.1.0",
+		"helmet": "^8.1.0",
+		"jsonwebtoken": "^9.0.2",
+		"mongodb": "^6.20.0",
+		"mongoose": "^7.0.0",
+		"mongoose-unique-validator": "^4.0.1",
+		"morgan": "^1.10.1",
+		"multer": "^2.0.2"
+	},
+	"description": "",
+	"devDependencies": {
+		"@biomejs/biome": "2.3.2"
+	},
+	"keywords": [],
+	"license": "ISC",
+	"main": "index.js",
+	"name": "backend",
+	"scripts": {
+		"check": "npx @biomejs/biome check --write",
+		"check:unsafe": "npx @biomejs/biome check --write --unsafe",
+		"start": "node --watch index.js"
+	},
+	"type": "commonjs",
+	"version": "1.0.0"
 }

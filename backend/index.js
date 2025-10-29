@@ -18,6 +18,7 @@ app.use(express.json());
 
 app.use("/api/books", bookRoutes);
 app.use("/api/auth", userRoutes);
+app.use("/images", express.static("images"));
 
 app.use((error, request, response, next) => {
   console.error("Une erreur est survenue.", error);

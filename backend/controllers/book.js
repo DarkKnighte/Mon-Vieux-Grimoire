@@ -9,7 +9,7 @@ exports.createBook = (request, response, next) => {
 
 	const book = new Book({
 		...bookObject,
-		image: `${request.protocol}://${request.get("host")}/images/${request.file.filename}`,
+		imageUrl: `${request.protocol}://${request.get("host")}/images/${request.file.filename}`,
 		userId: request.auth.userId,
 	});
 
@@ -25,7 +25,7 @@ exports.updateBook = (request, response, next) => {
 	const bookObject = request.file
 		? {
 				...JSON.parse(request.body.book),
-				image: `${request.protocol}://${request.get("host")}/images/${request.file.filename}`,
+				imageUrl: `${request.protocol}://${request.get("host")}/images/${request.file.filename}`,
 			}
 		: { ...request.body };
 
@@ -49,7 +49,7 @@ exports.deleteBook = (request, response, next) => {
 			if (book.userId !== request.auth.userId) {
 				response.status(401).json({ message: "Non-autorisé" });
 			} else {
-				const filename = book.image.split("/images/")[1];
+				const filename = book.imageUrl.split("/images/")[1];
 				fs.unlink(`images/${filename}`, () => {
 					Book.deleteOne({ _id: request.params.id })
 						.then(() => response.status(200).json({ message: "Livre supprimé !" }))
@@ -66,42 +66,52 @@ exports.getBook = (request, response, _next) => {
 		.catch((error) => response.status(404).json({ error }));
 };
 
-exports.getAllBooks = (request, response, next) => {
+exports.getAllBooks = (_request, response, next) => {
 	Book.find()
 		.then((books) => response.status(200).json(books))
 		.catch(next);
 };
 
+exports.getBestRatedBooks = (_request, _response, _next) => {
+	exports.getBestRatedBooks = (_request, response, next) => {
+		Book.find()
+			.sort({ averageRating: -1 })
+			.limit(3)
+			.then((books) => response.status(200).json(books))
+			.catch(next);
+	};
+};
+
 exports.rateBook = (request, response, next) => {
-  const userId = request.auth.userId;
-  const grade = request.body.rating;
+	const userId = request.auth.userId;
+	const grade = request.body.rating;
 
-  if (grade < 0 || grade > 5) {
-    return response.status(400).json({ message: "La note doit être comprise entre 0 et 5." });
-  }
+	if (grade < 0 || grade > 5) {
+		return response.status(400).json({ message: "La note doit être comprise entre 0 et 5." });
+	}
 
-  Book.findOne({ _id: request.params.id })
-    .then((book) => {
-      if (!book) return response.status(404).json({ message: "Livre non trouvé" });
+	Book.findOne({ _id: request.params.id })
+		.then((book) => {
+			if (!book) return response.status(404).json({ message: "Livre non trouvé" });
 
-      // 🔒 Vérifie si cet utilisateur a déjà noté le livre
-      const existingRating = book.ratings.find((r) => r.userId === userId);
-      if (existingRating) {
-        return response.status(400).json({ message: "Vous avez déjà noté ce livre." });
-      }
+			// 🔒 Vérifie si cet utilisateur a déjà noté le livre
+			const existingRating = book.ratings.find((r) => r.userId === userId);
+			if (existingRating) {
+				return response.status(400).json({ message: "Vous avez déjà noté ce livre." });
+			}
 
-      // ➕ Ajoute la note
-      book.ratings.push({ userId, grade });
+			// ➕ Ajoute la note
+			book.ratings.push({ grade, userId });
 
-      // 🔢 Recalcule la moyenne
-      const total = book.ratings.reduce((sum, r) => sum + r.grade, 0);
-      book.averageRating = total / book.ratings.length;
+			// 🔢 Recalcule la moyenne
+			const total = book.ratings.reduce((accumulator, current) => accumulator + current.grade, 0);
+			book.averageRating = total / book.ratings.length;
 
-      // 💾 Sauvegarde
-      book
-        .save()
-        .then((updatedBook) => response.status(200).json(updatedBook))
-        .catch(next);
-    })
-    .catch(next);
+			// 💾 Sauvegarde
+			book
+				.save()
+				.then((updatedBook) => response.status(200).json(updatedBook))
+				.catch(next);
+		})
+		.catch(next);
 };

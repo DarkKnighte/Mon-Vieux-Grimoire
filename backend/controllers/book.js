@@ -72,7 +72,6 @@ exports.getAllBooks = (_request, response, next) => {
 		.catch(next);
 };
 
-exports.getBestRatedBooks = (_request, _response, _next) => {
 	exports.getBestRatedBooks = (_request, response, next) => {
 		Book.find()
 			.sort({ averageRating: -1 })
@@ -80,7 +79,6 @@ exports.getBestRatedBooks = (_request, _response, _next) => {
 			.then((books) => response.status(200).json(books))
 			.catch(next);
 	};
-};
 
 exports.rateBook = (request, response, next) => {
 	const userId = request.auth.userId;

@@ -72,8 +72,11 @@ exports.getAllBooks = (_request, response, next) => {
 		.catch(next);
 };
 
-	exports.getBestRatedBooks = (_request, response, next) => {
-		Book.find()
+	exports.getBestRatedBooks = (request, response, next) => {
+    const excludedId = request.query.excludedId;
+    const filter = excludedId ? { _id: { $ne: excludedId } } : {};
+
+		Book.find(filter)
 			.sort({ averageRating: -1 })
 			.limit(3)
 			.then((books) => response.status(200).json(books))
